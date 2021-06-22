@@ -1,6 +1,6 @@
 # We'll choose the incredibly lightweight
 # Go alpine image to work with
-FROM golang:1.11.1 AS builder
+FROM golang:1.16.4 AS builder
 
 # We want to build and run
 # our application's binary executable
