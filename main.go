@@ -20,11 +20,12 @@ var upgrader = websocket.Upgrader{
 // define a reader which will listen for
 // new messages being sent to our WebSocket
 // endpoint
-func reader(conn *websocket.Conn) {
+func reader(conn *websocket.Conn ) {
 	for {
 		// read in a message
 		messageType, p, err := conn.ReadMessage()
 		if err != nil && len(p) != 0 {
+			alltime <- (string)(p)
 			if websocket.IsCloseError(err, websocket.CloseNormalClosure) {
 				log.Printf("error: %v", err)
 			}
@@ -74,11 +75,23 @@ func SendAndReceive (w http.ResponseWriter, r *http.Request) {
 	//go SendPingAtInterval(ws, 5 * time.Second)
 	send = make(chan []byte)
 	out = make(chan string)
+	alltime = make(chan string)
 	// Read Function
 	go callFunc()
 	go writer(ws)
+	go alwaysWriteToUI(ws)
 	reader(ws)
 
+}
+// Prints the same message back to UI
+func alwaysWriteToUI(conn *websocket.Conn) {
+	for m := range alltime {
+		fmt.Println(m)
+		if err := conn.WriteMessage(websocket.TextMessage, []byte(m)); err != nil {
+			log.Println(err)
+			return
+		}
+	}
 }
 
 func callFunc() {

@@ -39,7 +39,7 @@ const (
 var cacheBuff bytes.Buffer
 var send chan []byte
 var out chan string
-
+var alltime chan string
 type ExecOptions struct {
 	Namespace string
 	Pod       string
